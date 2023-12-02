@@ -420,11 +420,22 @@ nested_type = '__'.join(type_.namespaced_name())
         @primitive_msg_type_to_c(member.type.value_type) tmp = (@(primitive_msg_type_to_c(member.type.value_type)))PyLong_AsUnsignedLong(item);
 @[      end if]
 @[    elif isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'int64']@
-        assert(PyLong_Check(item));
-        @primitive_msg_type_to_c(member.type.value_type) tmp = PyLong_AsLongLong(item);
+    assert(PyLong_Check(item));
+    int64_t tmp = PyLong_AsLongLong(item);
+    if (PyErr_Occurred()) {
+        printf("Error in PyLong_AsLongLong conversion\n");
+        PyErr_Clear(); // Clear the error indicator
+        tmp = 0; // Set a default value or handle the error as needed
+    }
+    memcpy(&dest[i], &tmp, sizeof(int64_t));
 @[    elif isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'uint64']@
-        assert(PyLong_Check(item));
-        @primitive_msg_type_to_c(member.type.value_type) tmp = PyLong_AsUnsignedLongLong(item);
+    uint64_t tmp = PyLong_AsUnsignedLongLong(item);
+    if (PyErr_Occurred()) {
+        printf("Error in PyLong_AsUnsignedLongLong conversion\n");
+        PyErr_Clear(); // Clear the error indicator
+        tmp = 0; // Set a default value or handle the error as needed
+    }
+    memcpy(&dest[i], &tmp, sizeof(uint64_t));
 @[    end if]@
 @[    if isinstance(member.type.value_type, BasicType)]@
         memcpy(&dest[i], &tmp, sizeof(@primitive_msg_type_to_c(member.type.value_type)));
@@ -506,12 +517,22 @@ nested_type = '__'.join(type_.namespaced_name())
 @[    else]@
     ros_message->@(member.name) = (@(primitive_msg_type_to_c(member.type)))PyLong_AsUnsignedLong(field);
 @[    end if]@
-@[  elif isinstance(member.type, BasicType) and member.type.typename == 'int64']@
+@[ elif isinstance(member.type, BasicType) and member.type.typename == 'int64']@
     assert(PyLong_Check(field));
     ros_message->@(member.name) = PyLong_AsLongLong(field);
-@[  elif isinstance(member.type, BasicType) and member.type.typename == 'uint64']@
+    if (PyErr_Occurred()) {
+        printf("Error in PyLong_AsLongLong conversion for member '%s'\n", "@(member.name)");
+        PyErr_Clear(); // Clear the error indicator
+        ros_message->@(member.name) = 0; // Set a default value or handle the error as needed
+    }
+@[ elif isinstance(member.type, BasicType) and member.type.typename == 'uint64']@
     assert(PyLong_Check(field));
     ros_message->@(member.name) = PyLong_AsUnsignedLongLong(field);
+    if (PyErr_Occurred()) {
+        printf("Error in PyLong_AsUnsignedLongLong conversion for member '%s'\n", "@(member.name)");
+        PyErr_Clear(); // Clear the error indicator
+        ros_message->@(member.name) = 0; // Set a default value or handle the error as needed
+    }
 @[  else]@
     assert(false);
 @[  end if]@
