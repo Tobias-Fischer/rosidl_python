@@ -421,10 +421,10 @@ nested_type = '__'.join(type_.namespaced_name())
 @[      end if]
 @[    elif isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'int64']@
         assert(PyLong_Check(item));
-        @primitive_msg_type_to_c(member.type.value_type) tmp = PyLong_AsLongLong(item);
+        long long tmp = PyLong_AsLongLong(item);
 @[    elif isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'uint64']@
         assert(PyLong_Check(item));
-        @primitive_msg_type_to_c(member.type.value_type) tmp = PyLong_AsUnsignedLongLong(item);
+        unsigned long long tmp = PyLong_AsUnsignedLongLong(item);
 @[    end if]@
 @[    if isinstance(member.type.value_type, BasicType)]@
         memcpy(&dest[i], &tmp, sizeof(@primitive_msg_type_to_c(member.type.value_type)));
