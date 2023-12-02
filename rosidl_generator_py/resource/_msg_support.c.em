@@ -421,10 +421,10 @@ nested_type = '__'.join(type_.namespaced_name())
 @[      end if]
 @[    elif isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'int64']@
         assert(PyLong_Check(item));
-        @primitive_msg_type_to_c(member.type.value_type) tmp = PyLong_AsLongLong(item);
+        @primitive_msg_type_to_c(member.type.value_type) tmp = (@(primitive_msg_type_to_c(member.type.value_type)))PyLong_AsLongLong(item);
 @[    elif isinstance(member.type.value_type, BasicType) and member.type.value_type.typename == 'uint64']@
         assert(PyLong_Check(item));
-        @primitive_msg_type_to_c(member.type.value_type) tmp = PyLong_AsUnsignedLongLong(item);
+        @primitive_msg_type_to_c(member.type.value_type) tmp = (@(primitive_msg_type_to_c(member.type.value_type)))PyLong_AsUnsignedLongLong(item);
 @[    end if]@
 @[    if isinstance(member.type.value_type, BasicType)]@
         memcpy(&dest[i], &tmp, sizeof(@primitive_msg_type_to_c(member.type.value_type)));
@@ -508,10 +508,10 @@ nested_type = '__'.join(type_.namespaced_name())
 @[    end if]@
 @[  elif isinstance(member.type, BasicType) and member.type.typename == 'int64']@
     assert(PyLong_Check(field));
-    ros_message->@(member.name) = PyLong_AsLongLong(field);
+    ros_message->@(member.name) = (@(primitive_msg_type_to_c(member.type.value_type)))PyLong_AsLongLong(field);
 @[  elif isinstance(member.type, BasicType) and member.type.typename == 'uint64']@
     assert(PyLong_Check(field));
-    ros_message->@(member.name) = PyLong_AsUnsignedLongLong(field);
+    ros_message->@(member.name) = (@(primitive_msg_type_to_c(member.type.value_type)))PyLong_AsUnsignedLongLong(field);
 @[  else]@
     assert(false);
 @[  end if]@
